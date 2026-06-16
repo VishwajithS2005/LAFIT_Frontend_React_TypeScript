@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { UserRegister } from "../types/Users";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuthStore } from "../store/AuthStore";
+import { useAuthStore } from "../stores/AuthStore";
 
 
 export default function Register() {

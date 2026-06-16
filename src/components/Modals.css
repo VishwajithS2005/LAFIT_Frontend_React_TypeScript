@@ -1,0 +1,223 @@
+/* Existing styles... */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--bg-card);
+    padding: 32px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px; /* Default width for View mode */
+    border: 1px solid var(--border-color);
+    transition: max-width 0.3s ease;
+    
+    /* NEW: Constrain height and enable vertical scrolling */
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar for the modal to match your dark theme */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 8px; /* Adds a little padding to the top/bottom of the track */
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background-color: #4b5563;
+}
+
+/* New style: Expand modal width for add/edit to accommodate the split view */
+.modal-wide {
+    max-width: 750px;
+}
+
+/* Layout modifications */
+.modal-body-split {
+    display: flex;
+    gap: 24px;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+/* Ensure the left column (form inputs) stacks vertically */
+.form-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Preview Image styles (Add/Edit mode right side) */
+.image-preview-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-input);
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 250px;
+    overflow: hidden;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.image-placeholder {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* View Mode Image (Displayed on top) */
+.view-image-top {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Fix margin for the buttons so they span nicely below the split screen */
+.button-group {
+    margin-top: 24px;
+}
+
+.disabled-input {
+    background-color: #1a1a20;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.custom-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    font-size: 16px;
+}
+
+.cancel-btn {
+    background-color: #4b5563;
+}
+
+.cancel-btn:hover {
+    background-color: #374151;
+}
+
+.modal-content .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-content p {
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.claim-action-btn {
+    background-color: #10b981; /* Green color to differentiate from save */
+}
+
+.claim-action-btn:hover {
+    background-color: #059669;
+}
+
+/* Dynamic Textarea Styling */
+.custom-textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: none; /* Disables manual resizing since we are handling it dynamically */
+    overflow: hidden; /* Hides the scrollbar during resize calculations */
+    font-family: inherit; /* Ensures it matches the input font */
+    line-height: 1.5;
+}
+
+.custom-textarea:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.custom-textarea:disabled, 
+.custom-textarea.disabled-input {
+    background-color: #1a1a20;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* --- Claim Details Specific Text Layout --- */
+.claim-details-text {
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 16px;
+    color: var(--text-main);
+    word-break: break-word;
+}
+
+.detail-divider {
+    border: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 8px 0;
+    width: 100%;
+}
+
+/* Delete Action Button */
+.delete-action-btn {
+    background-color: #ef4444; /* Matches your dashboard logout red */
+    color: white;
+}
+
+.delete-action-btn:hover {
+    background-color: #dc2626;
+}

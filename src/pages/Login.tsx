@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { type UserLoginRequest } from "../types/Users"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuthStore } from "../store/AuthStore";
+import { useAuthStore } from "../stores/AuthStore";
 
 export default function Login() {
     const [username, setUsername] = useState("");
