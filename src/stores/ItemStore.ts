@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { api } from '../config/axiosConfig';
 import type { Item, ItemRequest } from '../types/Items'; 
+import { useToastStore } from './ToastStore';
 
 interface ItemState {
     yourItems: Item[];
@@ -14,7 +15,7 @@ interface ItemState {
     fetchResolvedItems: () => Promise<void>;
     addItem: (item: ItemRequest) => Promise<void>;
     editItem: (id: string, item: ItemRequest) => Promise<void>;
-    deleteItem: (id: string) => Promise<void>; // New method
+    deleteItem: (id: string) => Promise<void>;
 }
 
 export const useItemStore = create<ItemState>((set) => ({
@@ -58,8 +59,10 @@ export const useItemStore = create<ItemState>((set) => ({
         try {
             await api.post('/item', item);
             useItemStore.getState().fetchYourItems();
+            useToastStore.getState().addToast("Item created successfully!", "success");
         } catch (error: any) {
             set({ error: error.message });
+            useToastStore.getState().addToast(error.message, "error");
         }
     },
 
@@ -67,18 +70,21 @@ export const useItemStore = create<ItemState>((set) => ({
         try {
             await api.put(`/item/${id}`, item);
             useItemStore.getState().fetchYourItems();
+            useToastStore.getState().addToast("Item updated successfully!", "success");
         } catch (error: any) {
             set({ error: error.message });
+            useToastStore.getState().addToast(error.message, "error");
         }
     },
 
-    // New Delete Method
     deleteItem: async (id: string) => {
         try {
             await api.delete(`/item/${id}`);
             useItemStore.getState().fetchYourItems();
+            useToastStore.getState().addToast("Item deleted successfully!", "success");
         } catch (error: any) {
             set({ error: error.message });
+            useToastStore.getState().addToast(error.message, "error");
         }
     }
 }));

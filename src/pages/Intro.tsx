@@ -46,10 +46,10 @@ function Intro() {
             <p>This is the guest home page.</p>
             <div style={{ gap: "10px", display: "flex", justifyContent: "center" }}>
                 <Link to="/login">
-                    <button>Go to Login</button>
+                    <button>Login</button>
                 </Link>
                 <Link to="/register">
-                    <button>Go to Register</button>
+                    <button>Register</button>
                 </Link>
             </div>
         </div>

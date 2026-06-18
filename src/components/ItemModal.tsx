@@ -11,7 +11,7 @@ interface ItemModalProps {
     onClose: () => void;
     onSubmit: (itemData: ItemRequest) => Promise<void>;
     onClaim?: (itemId: string, actionType: ActionType) => Promise<void>;
-    onDelete?: (itemId: string) => Promise<void>; // New prop
+    onDelete?: (itemId: string) => Promise<void>;
 }
 
 export default function ItemModal({ isOpen, mode, activeItem, currentUserUsername, onClose, onSubmit, onClaim, onDelete }: ItemModalProps) {
@@ -44,10 +44,9 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
     const title = mode === 'add' ? 'Add New Item' : (isReadOnly ? 'Item Details' : 'Edit Item');
     const canClaim = isReadOnly && activeItem && currentUserUsername !== activeItem.username && activeItem.status !== 'RESOLVED';
     
-    // Check if item can be deleted: must be your item ('edit' mode) AND status must be PENDING or REJECTED
     const canDelete = mode === 'edit' && activeItem && (activeItem.status === 'PENDING' || activeItem.status === 'REJECTED');
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         
@@ -87,7 +86,6 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
                 <form onSubmit={handleSubmit} className="form-group">
                     <div className="modal-body-split">
                         
-                        {/* Left Side: Form Inputs */}
                         <div className="form-fields">
                             <div className="input-wrapper">
                                 <input 
@@ -147,7 +145,6 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
                                 </select>
                             </div>
                             
-                            {/* Read-only User/Email Info */}
                             {activeItem && (
                                 <>
                                     <div className="input-wrapper">
@@ -160,7 +157,6 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
                             )}
                         </div>
 
-                        {/* Right Side: Image Preview */}
                         <div className="image-preview-container">
                             {imageLink ? (
                                 <img src={imageLink} alt="Preview" className="image-preview" />
@@ -179,7 +175,6 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
                             </button>
                         )}
 
-                        {/* Delete Button for items you own in PENDING or REJECTED states */}
                         {canDelete && (
                             <button type="button" onClick={handleDeleteClick} className="delete-action-btn">
                                 Delete Item

@@ -4,7 +4,7 @@ import './Modals.css';
 interface ClaimModalProps {
     isOpen: boolean;
     claim: ResolutionClaim | null;
-    canDelete?: boolean; // Determines if the delete button should even be evaluated
+    canDelete?: boolean;
     onClose: () => void;
     onDelete?: (claimId: string) => Promise<void>;
 }
@@ -12,7 +12,6 @@ interface ClaimModalProps {
 export default function ClaimModal({ isOpen, claim, canDelete, onClose, onDelete }: ClaimModalProps) {
     if (!isOpen || !claim) return null;
 
-    // Check conditions: User must be viewing "Your Claims", and status must be PENDING or REJECTED
     const isDeletable = canDelete && (claim.status === 'PENDING' || claim.status === 'REJECTED');
 
     const handleDelete = async () => {
@@ -29,7 +28,6 @@ export default function ClaimModal({ isOpen, claim, canDelete, onClose, onDelete
                 <div className="form-group">
                     <div className="modal-body-split">
                         
-                        {/* Left Side: Claim Information text blocks */}
                         <div className="form-fields claim-details-text">
                             <div className="detail-row">
                                 <span className="detail-label">Item Name</span>
@@ -63,7 +61,6 @@ export default function ClaimModal({ isOpen, claim, canDelete, onClose, onDelete
                             </div>
                         </div>
 
-                        {/* Right Side: Image Preview */}
                         <div className="image-preview-container">
                             {claim.imageLink ? (
                                 <img src={claim.imageLink} alt="Item" className="image-preview" />

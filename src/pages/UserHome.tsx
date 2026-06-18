@@ -7,6 +7,8 @@ import type { ResolutionClaim, ActionType } from '../types/Claims';
 import ItemModal from '../components/ItemModal';
 import ClaimModal from '../components/ClaimModal';
 import './UserHome.css';
+import ToastContainer from '../components/ToastContainer';
+import { FiMenu, FiChevronDown, FiChevronRight } from 'react-icons/fi';
 
 type ViewState = 'dashboard' | 'your-items' | 'approved-items' | 'resolved-items' | 'your-claims' | 'approved-claims';
 
@@ -23,6 +25,10 @@ export default function UserHome() {
     
     const [currentView, setCurrentView] = useState<ViewState>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    
+    // Dropdown States
+    const [isItemsOpen, setIsItemsOpen] = useState(true);
+    const [isClaimsOpen, setIsClaimsOpen] = useState(true);
     
     const [itemModalState, setItemModalState] = useState<ItemModalState>({ isOpen: false, mode: 'add', activeItem: null });
     const [claimModalState, setClaimModalState] = useState<{ isOpen: boolean; claim: ResolutionClaim | null }>({ isOpen: false, claim: null });
@@ -87,7 +93,6 @@ export default function UserHome() {
 
         if (currentView === 'dashboard') return { paginatedData: [], totalPages: 0 };
 
-        // Search
         if (searchQuery.trim() !== '') {
             const query = searchQuery.toLowerCase();
             baseData = baseData.filter((entry) => {
@@ -102,7 +107,6 @@ export default function UserHome() {
             });
         }
 
-        // Specific Sorting
         if (sortBy !== 'none') {
             baseData.sort((a, b) => {
                 if (sortBy === 'item-asc') return (a.itemName || '').localeCompare(b.itemName || '');
@@ -135,20 +139,30 @@ export default function UserHome() {
                     <button className={`nav-btn ${currentView === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentView('dashboard')}>Dashboard</button>
                     
                     <div className="nav-dropdown">
-                        <span>Items ▾</span>
-                        <div className="dropdown-menu">
-                            <button onClick={() => setCurrentView('your-items')}>Your Items</button>
-                            <button onClick={() => setCurrentView('approved-items')}>Approved Items</button>
-                            <button onClick={() => setCurrentView('resolved-items')}>Resolved Items</button>
-                        </div>
+                        <button className="dropdown-toggle" onClick={() => setIsItemsOpen(!isItemsOpen)}>
+                            <span>Items</span>
+                            {isItemsOpen ? <FiChevronDown size={18} /> : <FiChevronRight size={18} />}
+                        </button>
+                        {isItemsOpen && (
+                            <div className="dropdown-menu">
+                                <button className={currentView === 'your-items' ? 'active' : ''} onClick={() => setCurrentView('your-items')}>Your Items</button>
+                                <button className={currentView === 'approved-items' ? 'active' : ''} onClick={() => setCurrentView('approved-items')}>Approved Items</button>
+                                <button className={currentView === 'resolved-items' ? 'active' : ''} onClick={() => setCurrentView('resolved-items')}>Resolved Items</button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="nav-dropdown">
-                        <span>Claims ▾</span>
-                        <div className="dropdown-menu">
-                            <button onClick={() => setCurrentView('your-claims')}>Your Claims</button>
-                            <button onClick={() => setCurrentView('approved-claims')}>Approved Claims</button>
-                        </div>
+                        <button className="dropdown-toggle" onClick={() => setIsClaimsOpen(!isClaimsOpen)}>
+                            <span>Claims</span>
+                            {isClaimsOpen ? <FiChevronDown size={18} /> : <FiChevronRight size={18} />}
+                        </button>
+                        {isClaimsOpen && (
+                            <div className="dropdown-menu">
+                                <button className={currentView === 'your-claims' ? 'active' : ''} onClick={() => setCurrentView('your-claims')}>Your Claims</button>
+                                <button className={currentView === 'approved-claims' ? 'active' : ''} onClick={() => setCurrentView('approved-claims')}>Approved Claims</button>
+                            </div>
+                        )}
                     </div>
                 </nav>
                 <button className="logout-btn" onClick={logout}>Logout</button>
@@ -158,7 +172,7 @@ export default function UserHome() {
                 
                 <div className="main-header">
                     <button className="toggle-sidebar-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-                        ☰ {isSidebarOpen ? 'Hide Menu' : 'Menu'}
+                        <FiMenu size={20} /> {isSidebarOpen ? 'Hide Menu' : 'Menu'}
                     </button>
                 </div>
 
@@ -206,7 +220,6 @@ export default function UserHome() {
                                     <option value="item-asc">Item Name (A-Z)</option>
                                     <option value="item-desc">Item Name (Z-A)</option>
 
-                                    {/* Sorts for Normal Items */}
                                     {!currentView.includes('claims') && (
                                         <>
                                             <option value="user-asc">Username (A-Z)</option>
@@ -214,7 +227,6 @@ export default function UserHome() {
                                         </>
                                     )}
 
-                                    {/* Sorts for Approved Claims */}
                                     {currentView === 'approved-claims' && (
                                         <>
                                             <option value="claimant-asc">Claimant Username (A-Z)</option>
@@ -224,7 +236,6 @@ export default function UserHome() {
                                         </>
                                     )}
 
-                                    {/* Sorts for Your Claims */}
                                     {currentView === 'your-claims' && (
                                         <>
                                             <option value="reporter-asc">Reported By Username (A-Z)</option>
@@ -284,16 +295,18 @@ export default function UserHome() {
                 onClose={() => setItemModalState({ isOpen: false, mode: 'add', activeItem: null })}
                 onSubmit={handleItemSubmit}
                 onClaim={handleCreateClaim}
-                onDelete={handleDeleteItem} // New line
+                onDelete={handleDeleteItem}
             />
 
             <ClaimModal 
                 isOpen={claimModalState.isOpen}
                 claim={claimModalState.claim}
-                canDelete={currentView === 'your-claims'} // Only allow deletion if viewed from "Your Claims"
+                canDelete={currentView === 'your-claims'}
                 onClose={() => setClaimModalState({ isOpen: false, claim: null })}
                 onDelete={handleDeleteClaim}
             />
+
+            <ToastContainer />
         </div>
     );
 }

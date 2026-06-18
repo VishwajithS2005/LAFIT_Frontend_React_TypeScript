@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { api } from '../config/axiosConfig';
 import type { ResolutionClaim, ClaimRequest } from '../types/Claims';
+import { useToastStore } from './ToastStore';
 
 interface ClaimState {
     yourClaims: ResolutionClaim[];
@@ -11,7 +12,7 @@ interface ClaimState {
     fetchYourClaims: () => Promise<void>;
     fetchApprovedClaims: () => Promise<void>;
     addClaim: (claim: ClaimRequest) => Promise<void>;
-    deleteClaim: (claimId: string) => Promise<void>; // New method
+    deleteClaim: (claimId: string) => Promise<void>;
 }
 
 export const useClaimStore = create<ClaimState>((set) => ({
@@ -44,18 +45,21 @@ export const useClaimStore = create<ClaimState>((set) => ({
         try {
             await api.post('/resolution', claim);
             useClaimStore.getState().fetchYourClaims();
+            useToastStore.getState().addToast("Claim submitted successfully!", "success");
         } catch (error: any) {
             set({ error: error.message });
+            useToastStore.getState().addToast(error.message, "error");
         }
     },
 
-    // New Delete Method
     deleteClaim: async (claimId: string) => {
         try {
             await api.delete(`/resolution/${claimId}`);
             useClaimStore.getState().fetchYourClaims();
+            useToastStore.getState().addToast("Claim deleted successfully!", "success");
         } catch (error: any) {
             set({ error: error.message });
+            useToastStore.getState().addToast(error.message, "error");
         }
     }
 }));
