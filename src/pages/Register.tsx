@@ -18,29 +18,29 @@ export default function Register() {
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
-        
-        if(password !== confirmPassword || !passwordRegex.test(password)) {
+
+        if (password !== confirmPassword || !passwordRegex.test(password)) {
             alert("Invalid Password.");
             return;
         }
-        
+
         const requestData: UserRegister = {
             username: username,
             password: password,
             email: email
-    };
+        };
 
         console.log("Sending registration request:", requestData);
         await register(requestData);
 
         const authState = useAuthStore.getState();
 
-        if(authState.user) {
+        if (authState.user) {
             navigate("/login");
             return;
         }
 
-        if(authState.error) {
+        if (authState.error) {
             alert(`Error: ${authState.error}.`);
             console.log(`Error: ${authState.error}.`);
             return;
@@ -51,7 +51,7 @@ export default function Register() {
         <div style={{ textAlign: "center", padding: "50px", maxWidth: "400px", margin: "0 auto" }}>
             <h2>Register</h2>
             <p>Create a new account.</p>
-            
+
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
                 <input
                     type="text"

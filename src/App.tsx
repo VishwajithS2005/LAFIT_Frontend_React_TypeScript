@@ -18,12 +18,10 @@ function App() {
 
                 <Route element={<ProtectedRoute allowedRoles={["USER"]} />}>
                     <Route path="/dashboard" element={<UserHome />} />
-                    {/* Add more USER routes here */}
                 </Route>
 
                 <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
                     <Route path="/admin" element={<AdminHome />} />
-                    {/* Add more ADMIN routes here */}
                 </Route>
 
                 <Route path="/forbidden" element={<Forbidden />} />

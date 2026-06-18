@@ -21,15 +21,15 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
     const resizeTextarea = () => {
         const el = descriptionRef.current;
         if (el) {
-            el.style.height = '0px'; 
-            el.style.height = `${el.scrollHeight + 2}px`; 
+            el.style.height = '0px';
+            el.style.height = `${el.scrollHeight + 2}px`;
         }
     };
 
     useEffect(() => {
         if (isOpen) {
             setImageLink(activeItem?.imageLink || '');
-            
+
             const timeoutId = setTimeout(() => {
                 resizeTextarea();
             }, 50);
@@ -43,13 +43,13 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
     const isReadOnly = mode === 'view' || activeItem?.status === 'RESOLVED';
     const title = mode === 'add' ? 'Add New Item' : (isReadOnly ? 'Item Details' : 'Edit Item');
     const canClaim = isReadOnly && activeItem && currentUserUsername !== activeItem.username && activeItem.status !== 'RESOLVED';
-    
+
     const canDelete = mode === 'edit' && activeItem && (activeItem.status === 'PENDING' || activeItem.status === 'REJECTED');
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        
+
         const itemData: ItemRequest = {
             itemName: formData.get('itemName') as string,
             itemDescription: formData.get('itemDescription') as string,
@@ -85,26 +85,26 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
 
                 <form onSubmit={handleSubmit} className="form-group">
                     <div className="modal-body-split">
-                        
+
                         <div className="form-fields">
                             <div className="input-wrapper">
-                                <input 
-                                    name="itemName" 
-                                    defaultValue={activeItem?.itemName || ''} 
-                                    placeholder="Item Name" 
-                                    required 
+                                <input
+                                    name="itemName"
+                                    defaultValue={activeItem?.itemName || ''}
+                                    placeholder="Item Name"
+                                    required
                                     disabled={isReadOnly}
                                     className={isReadOnly ? 'disabled-input' : ''}
                                 />
                             </div>
-                            
+
                             <div className="input-wrapper">
-                                <textarea 
-                                    name="itemDescription" 
+                                <textarea
+                                    name="itemDescription"
                                     ref={descriptionRef}
-                                    defaultValue={activeItem?.itemDescription || ''} 
-                                    placeholder="Description" 
-                                    required 
+                                    defaultValue={activeItem?.itemDescription || ''}
+                                    placeholder="Description"
+                                    required
                                     readOnly={isReadOnly}
                                     onChange={resizeTextarea}
                                     className={`custom-textarea ${isReadOnly ? 'disabled-input' : ''}`}
@@ -114,44 +114,44 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
                             </div>
 
                             <div className="input-wrapper">
-                                <input 
-                                    name="itemLocation" 
-                                    defaultValue={activeItem?.itemLocation || ''} 
-                                    placeholder="Location" 
-                                    required 
+                                <input
+                                    name="itemLocation"
+                                    defaultValue={activeItem?.itemLocation || ''}
+                                    placeholder="Location"
+                                    required
                                     disabled={isReadOnly}
                                     className={isReadOnly ? 'disabled-input' : ''}
                                 />
                             </div>
                             <div className="input-wrapper">
-                                <input 
-                                    name="imageLink" 
-                                    value={imageLink} 
+                                <input
+                                    name="imageLink"
+                                    value={imageLink}
                                     onChange={(e) => setImageLink(e.target.value)}
-                                    placeholder="Image Link (URL)" 
+                                    placeholder="Image Link (URL)"
                                     disabled={isReadOnly}
                                     className={isReadOnly ? 'disabled-input' : ''}
                                 />
                             </div>
                             <div className="input-wrapper">
-                                <select 
-                                    name="type" 
-                                    defaultValue={activeItem?.type || "LOST"} 
-                                    disabled={isReadOnly} 
+                                <select
+                                    name="type"
+                                    defaultValue={activeItem?.type || "LOST"}
+                                    disabled={isReadOnly}
                                     className={`custom-select ${isReadOnly ? 'disabled-input' : ''}`}
                                 >
                                     <option value="LOST">Lost</option>
                                     <option value="FOUND">Found</option>
                                 </select>
                             </div>
-                            
+
                             {activeItem && (
                                 <>
                                     <div className="input-wrapper">
-                                        <input value={activeItem.username} title="Username (Fixed)" disabled className="disabled-input"/>
+                                        <input value={activeItem.username} title="Username (Fixed)" disabled className="disabled-input" />
                                     </div>
                                     <div className="input-wrapper">
-                                        <input value={activeItem.email} title="Email (Fixed)" disabled className="disabled-input"/>
+                                        <input value={activeItem.email} title="Email (Fixed)" disabled className="disabled-input" />
                                     </div>
                                 </>
                             )}
@@ -168,7 +168,7 @@ export default function ItemModal({ isOpen, mode, activeItem, currentUserUsernam
 
                     <div className="button-group">
                         {!isReadOnly && <button type="submit">Save</button>}
-                        
+
                         {canClaim && (
                             <button type="button" onClick={handleClaimClick} className="claim-action-btn">
                                 {activeItem.type === 'FOUND' ? 'Claim Found Item' : 'Return Lost Item'}

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { 
+import {
     type User,
     type UserLoginRequest,
     type UserRegister,
@@ -15,7 +15,7 @@ interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
-    
+
     login: (credentials: UserLoginRequest) => Promise<void>;
     register: (credentials: UserRegister) => Promise<void>;
     logout: () => void;
@@ -35,20 +35,20 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true, error: null });
                 try {
                     const response = await api.post<UserLoginResponse>('/user/login', credentials);
-                    
+
                     const loginData: UserLoginResponse = response.data;
                     const user: User = convertUserLoginToUser(loginData);
-                    
-                    set({ 
+
+                    set({
                         user: user,
                         token: loginData.token,
-                        isAuthenticated: true, 
-                        isLoading: false 
+                        isAuthenticated: true,
+                        isLoading: false
                     });
                 } catch (error: any) {
-                    set({ 
-                        error: error.response?.data?.message || 'Failed to log in', 
-                        isLoading: false 
+                    set({
+                        error: error.response?.data?.message || 'Failed to log in',
+                        isLoading: false
                     });
                 }
             },
@@ -58,16 +58,16 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     const response = await api.post<User>('/user', credentials);
                     const user: User = response.data;
-                    set({ 
+                    set({
                         user: user,
                         token: null,
-                        isAuthenticated: false, 
-                        isLoading: false 
+                        isAuthenticated: false,
+                        isLoading: false
                     });
                     window.location.href = "/login"
                 } catch (error: any) {
-                    set({ 
-                        error: error.response?.data?.message || 'Failed to register', 
+                    set({
+                        error: error.response?.data?.message || 'Failed to register',
                         isLoading: false
                     });
                 }
@@ -83,7 +83,7 @@ export const useAuthStore = create<AuthState>()(
 
                 try {
                     await api.get('/user/verify');
-                    return true; 
+                    return true;
                 } catch (error) {
                     set({ user: null, token: null, isAuthenticated: false, error: null });
                     return false;
@@ -92,9 +92,9 @@ export const useAuthStore = create<AuthState>()(
         }),
         {
             name: 'auth-storage',
-            partialize: (state) => ({ 
-                user: state.user, 
-                token: state.token, 
+            partialize: (state) => ({
+                user: state.user,
+                token: state.token,
                 isAuthenticated: state.isAuthenticated
             }),
         }

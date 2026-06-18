@@ -1,7 +1,9 @@
-/* Existing styles... */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
@@ -14,23 +16,20 @@
     padding: 32px;
     border-radius: 12px;
     width: 100%;
-    max-width: 400px; /* Default width for View mode */
+    max-width: 400px;
     border: 1px solid var(--border-color);
     transition: max-width 0.3s ease;
-    
-    /* NEW: Constrain height and enable vertical scrolling */
     max-height: 90vh;
     overflow-y: auto;
 }
 
-/* Custom Scrollbar for the modal to match your dark theme */
 .modal-content::-webkit-scrollbar {
     width: 8px;
 }
 
 .modal-content::-webkit-scrollbar-track {
     background: transparent;
-    margin: 8px; /* Adds a little padding to the top/bottom of the track */
+    margin: 8px;
 }
 
 .modal-content::-webkit-scrollbar-thumb {
@@ -42,12 +41,10 @@
     background-color: #4b5563;
 }
 
-/* New style: Expand modal width for add/edit to accommodate the split view */
 .modal-wide {
     max-width: 750px;
 }
 
-/* Layout modifications */
 .modal-body-split {
     display: flex;
     gap: 24px;
@@ -55,7 +52,6 @@
     align-items: stretch;
 }
 
-/* Ensure the left column (form inputs) stacks vertically */
 .form-fields {
     flex: 1;
     display: flex;
@@ -63,7 +59,6 @@
     gap: 16px;
 }
 
-/* Preview Image styles (Add/Edit mode right side) */
 .image-preview-container {
     flex: 1;
     display: flex;
@@ -90,17 +85,15 @@
     font-weight: 500;
 }
 
-/* View Mode Image (Displayed on top) */
 .view-image-top {
     width: 100%;
     max-height: 250px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Fix margin for the buttons so they span nicely below the split screen */
 .button-group {
     margin-top: 24px;
 }
@@ -141,14 +134,13 @@
 }
 
 .claim-action-btn {
-    background-color: #10b981; /* Green color to differentiate from save */
+    background-color: #10b981;
 }
 
 .claim-action-btn:hover {
     background-color: #059669;
 }
 
-/* Dynamic Textarea Styling */
 .custom-textarea {
     width: 100%;
     padding: 12px;
@@ -159,9 +151,9 @@
     font-size: 16px;
     box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
-    resize: none; /* Disables manual resizing since we are handling it dynamically */
-    overflow: hidden; /* Hides the scrollbar during resize calculations */
-    font-family: inherit; /* Ensures it matches the input font */
+    resize: none;
+    overflow: hidden;
+    font-family: inherit;
     line-height: 1.5;
 }
 
@@ -171,14 +163,13 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
-.custom-textarea:disabled, 
+.custom-textarea:disabled,
 .custom-textarea.disabled-input {
     background-color: #1a1a20;
     color: #666;
     cursor: not-allowed;
 }
 
-/* --- Claim Details Specific Text Layout --- */
 .claim-details-text {
     justify-content: flex-start;
     gap: 12px;
@@ -212,9 +203,8 @@
     width: 100%;
 }
 
-/* Delete Action Button */
 .delete-action-btn {
-    background-color: #ef4444; /* Matches your dashboard logout red */
+    background-color: #ef4444;
     color: white;
 }
 

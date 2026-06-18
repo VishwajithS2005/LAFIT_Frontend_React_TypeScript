@@ -15,7 +15,7 @@
     font-weight: 500;
     font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     animation: slideInRight 0.3s ease-out forwards;
     min-width: 250px;
     display: flex;
@@ -23,17 +23,26 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.toast-success { background-color: #10b981; } /* Green */
-.toast-error { background-color: #ef4444; }   /* Red */
-.toast-info { background-color: #3b82f6; }    /* Blue */
+.toast-success {
+    background-color: #10b981;
+}
+
+.toast-error {
+    background-color: #ef4444;
+}
+
+.toast-info {
+    background-color: #3b82f6;
+}
 
 @keyframes slideInRight {
-    from { 
-        transform: translateX(100%); 
-        opacity: 0; 
+    from {
+        transform: translateX(100%);
+        opacity: 0;
     }
-    to { 
-        transform: translateX(0); 
-        opacity: 1; 
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 }

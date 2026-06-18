@@ -9,7 +9,7 @@ function Intro() {
     useEffect(() => {
         const checkSession = async () => {
             const authState = useAuthStore.getState();
-            
+
             if (!authState.isAuthenticated || !authState.user || !authState.token) {
                 setIsChecking(false);
                 return;

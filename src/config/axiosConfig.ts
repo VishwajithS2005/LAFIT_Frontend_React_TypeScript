@@ -13,7 +13,7 @@ api.interceptors.request.use(
         if (storageStr) {
             try {
                 const parsedStorage = JSON.parse(storageStr);
-                token = parsedStorage.state.token; 
+                token = parsedStorage.state.token;
             } catch (e) {
                 console.error("Failed to parse auth storage");
             }
@@ -27,7 +27,7 @@ api.interceptors.request.use(
                 return Promise.reject(new Error("Session expired. Please log in again."));
             }
         }
-        
+
         return config;
     },
     (error) => {
@@ -44,7 +44,7 @@ api.interceptors.response.use(
             console.warn("Backend detected invalid/mocked token. Forcing logout.");
             logoutUser();
         }
-        
+
         return Promise.reject(error);
     }
 );

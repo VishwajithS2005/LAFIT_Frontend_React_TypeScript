@@ -12,44 +12,44 @@ export default function Login() {
     const navigate = useNavigate();
     const { login } = useAuthStore();
 
-const handleSubmit= async (e: React.SubmitEvent) => {
-    e.preventDefault();
+    const handleSubmit = async (e: React.SubmitEvent) => {
+        e.preventDefault();
 
-    if(!passwordRegex.test(password)) {
-        alert("Invalid password.");
-        return;
-    }
-    
-    const requestData: UserLoginRequest = {
-        username: username,
-        password: password
-    };
-
-    await login(requestData);
-    const authState = useAuthStore.getState();
-    
-    if (authState.isAuthenticated && authState.user) {
-        if (authState.user.role === "ADMIN") {
-            navigate("/admin");
-            return;
-        } else if (authState.user.role === "USER") {
-            navigate("/dashboard");
+        if (!passwordRegex.test(password)) {
+            alert("Invalid password.");
             return;
         }
-    }
 
-    if(authState.error) {
-        alert(`Error: ${authState.error}.`);
-        console.log(`Error: ${authState.error}.`);
-        return;
-    }
-};
+        const requestData: UserLoginRequest = {
+            username: username,
+            password: password
+        };
+
+        await login(requestData);
+        const authState = useAuthStore.getState();
+
+        if (authState.isAuthenticated && authState.user) {
+            if (authState.user.role === "ADMIN") {
+                navigate("/admin");
+                return;
+            } else if (authState.user.role === "USER") {
+                navigate("/dashboard");
+                return;
+            }
+        }
+
+        if (authState.error) {
+            alert(`Error: ${authState.error}.`);
+            console.log(`Error: ${authState.error}.`);
+            return;
+        }
+    };
 
     return (
         <div style={{ textAlign: "center", padding: "50px", maxWidth: "400px", margin: "0 auto" }}>
             <h2>Login</h2>
             <p>Please enter your credentials.</p>
-            
+
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
                 <input
                     type="text"

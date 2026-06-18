@@ -24,10 +24,10 @@ export default function ClaimModal({ isOpen, claim, canDelete, onClose, onDelete
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content modal-wide" onClick={e => e.stopPropagation()}>
                 <h3>Claim Details</h3>
-                
+
                 <div className="form-group">
                     <div className="modal-body-split">
-                        
+
                         <div className="form-fields claim-details-text">
                             <div className="detail-row">
                                 <span className="detail-label">Item Name</span>
@@ -41,9 +41,9 @@ export default function ClaimModal({ isOpen, claim, canDelete, onClose, onDelete
                                 <span className="detail-label">Location</span>
                                 <span className="detail-value">{claim.itemLocation || 'N/A'}</span>
                             </div>
-                            
+
                             <hr className="detail-divider" />
-                            
+
                             <div className="detail-row">
                                 <span className="detail-label">Action Status</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>

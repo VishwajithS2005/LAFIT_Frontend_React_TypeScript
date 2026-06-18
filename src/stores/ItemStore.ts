@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../config/axiosConfig';
-import type { Item, ItemRequest } from '../types/Items'; 
+import type { Item, ItemRequest } from '../types/Items';
 import { useToastStore } from './ToastStore';
 
 interface ItemState {

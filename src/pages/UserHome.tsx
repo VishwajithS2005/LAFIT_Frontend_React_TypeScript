@@ -23,16 +23,16 @@ export default function UserHome() {
     const { logout, user } = useAuthStore();
     const { yourItems, approvedItems, resolvedItems, fetchYourItems, fetchApprovedItems, fetchResolvedItems, addItem, editItem, deleteItem } = useItemStore();
     const { yourClaims, approvedClaims, fetchYourClaims, fetchApprovedClaims, addClaim, deleteClaim } = useClaimStore();
-    
+
     const [currentView, setCurrentView] = useState<ViewState>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    
+
     const [isItemsOpen, setIsItemsOpen] = useState(true);
     const [isClaimsOpen, setIsClaimsOpen] = useState(true);
-    
+
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-    
+
     const [itemModalState, setItemModalState] = useState<ItemModalState>({ isOpen: false, mode: 'add', activeItem: null });
     const [claimModalState, setClaimModalState] = useState<{ isOpen: boolean; claim: ResolutionClaim | null }>({ isOpen: false, claim: null });
 
@@ -40,7 +40,7 @@ export default function UserHome() {
     const [searchField, setSearchField] = useState<'all' | 'itemName' | 'username'>('all');
     const [filterType, setFilterType] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
-    
+
     const [sortItemName, setSortItemName] = useState<'none' | 'asc' | 'desc'>('none');
     const [sortUsername, setSortUsername] = useState<'none' | 'asc' | 'desc'>('none');
     const [sortReporter, setSortReporter] = useState<'none' | 'asc' | 'desc'>('none');
@@ -132,7 +132,7 @@ export default function UserHome() {
             const query = searchQuery.toLowerCase();
             baseData = baseData.filter((entry) => {
                 const itemNameStr = (entry.itemName || '').toLowerCase();
-                let usernameStr = isClaimView 
+                let usernameStr = isClaimView
                     ? `${entry.reportedByUsername || ''} ${entry.claimantUsername || ''}`.toLowerCase()
                     : (entry.username || '').toLowerCase();
 
@@ -191,7 +191,7 @@ export default function UserHome() {
                 <h2>LAFIT</h2>
                 <nav>
                     <button className={`nav-btn ${currentView === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentView('dashboard')}>Dashboard</button>
-                    
+
                     <div className="nav-dropdown">
                         <button className="dropdown-toggle" onClick={() => setIsItemsOpen(!isItemsOpen)}>
                             <span>Items</span>
@@ -223,7 +223,7 @@ export default function UserHome() {
             </aside>
 
             <main className={`dashboard-content ${!isSidebarOpen ? 'expanded' : ''}`}>
-                
+
                 <div className="main-header">
                     <button className="toggle-sidebar-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
                         <FiMenu size={20} /> {isSidebarOpen ? 'Hide Menu' : 'Menu'}
@@ -254,9 +254,9 @@ export default function UserHome() {
 
                         <div className="toolbar">
                             <div className="search-group">
-                                <input 
-                                    type="text" 
-                                    placeholder="Search..." 
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="search-input"
@@ -267,11 +267,11 @@ export default function UserHome() {
                                     <option value="username">Username Only</option>
                                 </select>
                             </div>
-                            
+
                             <div className="toolbar-actions">
                                 <div className="toolbar-group relative-container" ref={filterMenuRef}>
-                                    <button 
-                                        className="custom-dropdown-btn" 
+                                    <button
+                                        className="custom-dropdown-btn"
                                         onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
                                     >
                                         <FiFilter className="toolbar-icon" size={18} />
@@ -344,8 +344,8 @@ export default function UserHome() {
                                 </div>
 
                                 <div className="toolbar-group relative-container" ref={sortMenuRef}>
-                                    <button 
-                                        className="custom-dropdown-btn" 
+                                    <button
+                                        className="custom-dropdown-btn"
                                         onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
                                     >
                                         <FiList className="toolbar-icon" size={18} />
@@ -355,7 +355,7 @@ export default function UserHome() {
 
                                     {isSortMenuOpen && (
                                         <div className="custom-dropdown-menu">
-                                            
+
                                             <div className="filter-section">
                                                 <h4 className="filter-heading">Item Name</h4>
                                                 <label className="radio-label">
@@ -447,9 +447,9 @@ export default function UserHome() {
                                 paginatedData.map(entry => {
                                     const isClaim = currentView.includes('claims');
                                     return (
-                                        <div 
-                                            key={entry.id} 
-                                            className="grid-card" 
+                                        <div
+                                            key={entry.id}
+                                            className="grid-card"
                                             onClick={() => isClaim ? setClaimModalState({ isOpen: true, claim: entry }) : openItemModal(entry, currentView === 'your-items' ? 'edit' : 'view')}
                                         >
                                             {entry.imageLink ? (
@@ -458,7 +458,7 @@ export default function UserHome() {
                                                 <div className="card-image-placeholder">No Image</div>
                                             )}
                                             <h4>{isClaim ? `Claim for: ${entry.itemName}` : entry.itemName}</h4>
-                                            
+
                                             <p className="card-subtext">
                                                 User: {isClaim ? (entry.claimantUsername || entry.reportedByUsername) : entry.username}
                                             </p>
@@ -481,7 +481,7 @@ export default function UserHome() {
                 )}
             </main>
 
-            <ItemModal 
+            <ItemModal
                 isOpen={itemModalState.isOpen}
                 mode={itemModalState.mode}
                 activeItem={itemModalState.activeItem}
@@ -492,7 +492,7 @@ export default function UserHome() {
                 onDelete={handleDeleteItem}
             />
 
-            <ClaimModal 
+            <ClaimModal
                 isOpen={claimModalState.isOpen}
                 claim={claimModalState.claim}
                 canDelete={currentView === 'your-claims'}

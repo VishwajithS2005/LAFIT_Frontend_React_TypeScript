@@ -39,10 +39,10 @@ export interface UserUpdate {
     email?: string
 }
 
-export function convertUserLoginToUser(ul: UserLoginResponse) : User {
+export function convertUserLoginToUser(ul: UserLoginResponse): User {
     return {
         id: ul.id,
-        username : ul.username,
+        username: ul.username,
         role: ul.role,
         email: ul.email
     };
