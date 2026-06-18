@@ -13,6 +13,7 @@ interface ClaimState {
     fetchApprovedClaims: () => Promise<void>;
     addClaim: (claim: ClaimRequest) => Promise<void>;
     deleteClaim: (claimId: string) => Promise<void>;
+    editClaimStatus: (claimId: string, status: 'APPROVED' | 'REJECTED') => Promise<void>;
 }
 
 export const useClaimStore = create<ClaimState>((set) => ({
@@ -59,6 +60,16 @@ export const useClaimStore = create<ClaimState>((set) => ({
             useToastStore.getState().addToast("Claim deleted successfully!", "success");
         } catch (error: any) {
             set({ error: error.message });
+            useToastStore.getState().addToast(error.message, "error");
+        }
+    },
+
+    editClaimStatus: async (claimId: string, status: 'APPROVED' | 'REJECTED') => {
+        try {
+            await api.patch(`/resolution/${claimId}?status=${status}`);
+            useClaimStore.getState().fetchYourClaims();
+            useToastStore.getState().addToast(`Claim ${status.toLowerCase()} successfully!`, "success");
+        } catch (error: any) {
             useToastStore.getState().addToast(error.message, "error");
         }
     }

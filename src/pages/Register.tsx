@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import type { UserRegister } from "../types/Users";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuthStore } from "../stores/AuthStore";
+import { useToastStore } from "../stores/ToastStore";
+import ToastContainer from "../components/ToastContainer";
 
 
 export default function Register() {
@@ -20,7 +22,7 @@ export default function Register() {
         e.preventDefault();
 
         if (password !== confirmPassword || !passwordRegex.test(password)) {
-            alert("Invalid Password.");
+            useToastStore.getState().addToast("Invalid Password.", "error");
             return;
         }
 
@@ -41,8 +43,7 @@ export default function Register() {
         }
 
         if (authState.error) {
-            alert(`Error: ${authState.error}.`);
-            console.log(`Error: ${authState.error}.`);
+            useToastStore.getState().addToast(`Error: ${authState.error}.`, "error");
             return;
         }
     };
@@ -115,6 +116,8 @@ export default function Register() {
             <div style={{ marginTop: "20px" }}>
                 <Link to="/">Back to Home</Link>
             </div>
+
+            <ToastContainer />
         </div>
     );
 }

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { type UserLoginRequest } from "../types/Users"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuthStore } from "../stores/AuthStore";
+import { useToastStore } from "../stores/ToastStore";
+import ToastContainer from "../components/ToastContainer";
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -16,7 +18,7 @@ export default function Login() {
         e.preventDefault();
 
         if (!passwordRegex.test(password)) {
-            alert("Invalid password.");
+            useToastStore.getState().addToast("Invalid password.", "error");
             return;
         }
 
@@ -39,9 +41,8 @@ export default function Login() {
         }
 
         if (authState.error) {
-            alert(`Error: ${authState.error}.`);
-            console.log(`Error: ${authState.error}.`);
-            return;
+            useToastStore.getState().addToast(`Error: ${authState.error}.`, "error");
+            // alert(`Error: ${authState.error}.`);
         }
     };
 
@@ -86,6 +87,7 @@ export default function Login() {
             <div style={{ marginTop: "20px" }}>
                 <Link to="/">Back to Home</Link>
             </div>
+            <ToastContainer />
         </div>
     );
 }

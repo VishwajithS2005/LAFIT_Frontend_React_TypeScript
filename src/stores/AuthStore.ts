@@ -64,7 +64,6 @@ export const useAuthStore = create<AuthState>()(
                         isAuthenticated: false,
                         isLoading: false
                     });
-                    window.location.href = "/login"
                 } catch (error: any) {
                     set({
                         error: error.response?.data?.message || 'Failed to register',

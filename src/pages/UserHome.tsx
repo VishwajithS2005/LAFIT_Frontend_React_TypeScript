@@ -10,6 +10,7 @@ import './UserHome.css';
 import ToastContainer from '../components/ToastContainer';
 
 import { FiMenu, FiChevronDown, FiChevronRight, FiFilter, FiList } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 type ViewState = 'dashboard' | 'your-items' | 'approved-items' | 'resolved-items' | 'your-claims' | 'approved-claims';
 
@@ -20,6 +21,7 @@ interface ItemModalState {
 }
 
 export default function UserHome() {
+    const navigate = useNavigate();
     const { logout, user } = useAuthStore();
     const { yourItems, approvedItems, resolvedItems, fetchYourItems, fetchApprovedItems, fetchResolvedItems, addItem, editItem, deleteItem } = useItemStore();
     const { yourClaims, approvedClaims, fetchYourClaims, fetchApprovedClaims, addClaim, deleteClaim } = useClaimStore();
@@ -219,7 +221,10 @@ export default function UserHome() {
                         )}
                     </div>
                 </nav>
-                <button className="logout-btn" onClick={logout}>Logout</button>
+                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <button className="nav-btn" onClick={() => navigate('/settings')} style={{ background: 'var(--bg-input)' }}>⚙ Settings</button>
+                    <button className="logout-btn" onClick={logout}>Logout</button>
+                </div>
             </aside>
 
             <main className={`dashboard-content ${!isSidebarOpen ? 'expanded' : ''}`}>

@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserHome from "./pages/UserHome";
 import AdminHome from "./pages/AdminHome";
 import Forbidden from "./pages/Forbidden";
+import Settings from "./pages/Settings";
 
 function App() {
     return (
@@ -22,6 +23,10 @@ function App() {
 
                 <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
                     <Route path="/admin" element={<AdminHome />} />
+                </Route>
+
+                <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
+                    <Route path="/settings" element={<Settings />} />
                 </Route>
 
                 <Route path="/forbidden" element={<Forbidden />} />

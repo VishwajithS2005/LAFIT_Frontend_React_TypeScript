@@ -23,8 +23,11 @@ api.interceptors.request.use(
             if (isTokenValid(token)) {
                 config.headers.Authorization = `Bearer ${token}`;
             } else {
-                logoutUser();
-                return Promise.reject(new Error("Session expired. Please log in again."));
+                const isAuthRoute = window.location.href.includes('/login') || window.location.href.includes('/register');
+                if (!isAuthRoute) {
+                    logoutUser();
+                    return Promise.reject(new Error("Session expired. Please log in again."));
+                }
             }
         }
 
@@ -41,8 +44,11 @@ api.interceptors.response.use(
     },
     (error) => {
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            const isAuthRoute: boolean = window.location.href.includes('/login') || window.location.href.includes('/register');
             console.warn("Backend detected invalid/mocked token. Forcing logout.");
-            logoutUser();
+            if (error.response?.status === 401 && !isAuthRoute) {
+                logoutUser();
+            }
         }
 
         return Promise.reject(error);
