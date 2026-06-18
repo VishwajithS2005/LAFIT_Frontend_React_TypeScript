@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useItemStore } from '../stores/ItemStore';
 import { useClaimStore } from '../stores/ClaimStore';
 import { useAuthStore } from '../stores/AuthStore';
@@ -8,7 +8,8 @@ import ItemModal from '../components/ItemModal';
 import ClaimModal from '../components/ClaimModal';
 import './UserHome.css';
 import ToastContainer from '../components/ToastContainer';
-import { FiMenu, FiChevronDown, FiChevronRight } from 'react-icons/fi';
+
+import { FiMenu, FiChevronDown, FiChevronRight, FiFilter, FiList } from 'react-icons/fi';
 
 type ViewState = 'dashboard' | 'your-items' | 'approved-items' | 'resolved-items' | 'your-claims' | 'approved-claims';
 
@@ -26,18 +27,43 @@ export default function UserHome() {
     const [currentView, setCurrentView] = useState<ViewState>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     
-    // Dropdown States
     const [isItemsOpen, setIsItemsOpen] = useState(true);
     const [isClaimsOpen, setIsClaimsOpen] = useState(true);
+    
+    const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+    const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
     
     const [itemModalState, setItemModalState] = useState<ItemModalState>({ isOpen: false, mode: 'add', activeItem: null });
     const [claimModalState, setClaimModalState] = useState<{ isOpen: boolean; claim: ResolutionClaim | null }>({ isOpen: false, claim: null });
 
     const [searchQuery, setSearchQuery] = useState("");
     const [searchField, setSearchField] = useState<'all' | 'itemName' | 'username'>('all');
-    const [sortBy, setSortBy] = useState<string>('none');
+    const [filterType, setFilterType] = useState<string>('all');
+    const [statusFilter, setStatusFilter] = useState<string>('all');
+    
+    const [sortItemName, setSortItemName] = useState<'none' | 'asc' | 'desc'>('none');
+    const [sortUsername, setSortUsername] = useState<'none' | 'asc' | 'desc'>('none');
+    const [sortReporter, setSortReporter] = useState<'none' | 'asc' | 'desc'>('none');
+    const [sortClaimant, setSortClaimant] = useState<'none' | 'asc' | 'desc'>('none');
+
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
+
+    const filterMenuRef = useRef<HTMLDivElement>(null);
+    const sortMenuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target as Node)) {
+                setIsFilterMenuOpen(false);
+            }
+            if (sortMenuRef.current && !sortMenuRef.current.contains(event.target as Node)) {
+                setIsSortMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     useEffect(() => {
         fetchYourItems();
@@ -49,7 +75,14 @@ export default function UserHome() {
 
     useEffect(() => {
         setCurrentPage(1);
-        setSortBy('none');
+        setFilterType('all');
+        setStatusFilter('all');
+        setSortItemName('none');
+        setSortUsername('none');
+        setSortReporter('none');
+        setSortClaimant('none');
+        setIsFilterMenuOpen(false);
+        setIsSortMenuOpen(false);
     }, [currentView, searchQuery, searchField]);
 
     const openItemModal = (item: Item | null, mode: 'add' | 'edit' | 'view') => {
@@ -81,6 +114,8 @@ export default function UserHome() {
         setClaimModalState({ isOpen: false, claim: null });
     };
 
+    const isSortingActive = sortItemName !== 'none' || sortUsername !== 'none' || sortReporter !== 'none' || sortClaimant !== 'none';
+
     const { paginatedData, totalPages } = useMemo(() => {
         let baseData: any[] = [];
         const isClaimView = currentView.includes('claims');
@@ -107,19 +142,38 @@ export default function UserHome() {
             });
         }
 
-        if (sortBy !== 'none') {
-            baseData.sort((a, b) => {
-                if (sortBy === 'item-asc') return (a.itemName || '').localeCompare(b.itemName || '');
-                if (sortBy === 'item-desc') return (b.itemName || '').localeCompare(a.itemName || '');
-                
-                if (sortBy === 'user-asc') return (a.username || '').localeCompare(b.username || '');
-                if (sortBy === 'user-desc') return (b.username || '').localeCompare(a.username || '');
-                
-                if (sortBy === 'claimant-asc') return (a.claimantUsername || '').localeCompare(b.claimantUsername || '');
-                if (sortBy === 'claimant-desc') return (b.claimantUsername || '').localeCompare(a.claimantUsername || '');
+        if (filterType !== 'all') {
+            baseData = baseData.filter((entry) => {
+                if (isClaimView) return entry.actionType === filterType;
+                return entry.type === filterType;
+            });
+        }
 
-                if (sortBy === 'reporter-asc') return (a.reportedByUsername || '').localeCompare(b.reportedByUsername || '');
-                if (sortBy === 'reporter-desc') return (b.reportedByUsername || '').localeCompare(a.reportedByUsername || '');
+        if (statusFilter !== 'all') {
+            baseData = baseData.filter((entry) => entry.status === statusFilter);
+        }
+
+        if (isSortingActive) {
+            baseData.sort((a, b) => {
+                if (sortItemName !== 'none') {
+                    const cmp = (a.itemName || '').localeCompare(b.itemName || '');
+                    if (cmp !== 0) return sortItemName === 'asc' ? cmp : -cmp;
+                }
+
+                if (!isClaimView && sortUsername !== 'none') {
+                    const cmp = (a.username || '').localeCompare(b.username || '');
+                    if (cmp !== 0) return sortUsername === 'asc' ? cmp : -cmp;
+                }
+
+                if (isClaimView && sortReporter !== 'none') {
+                    const cmp = (a.reportedByUsername || '').localeCompare(b.reportedByUsername || '');
+                    if (cmp !== 0) return sortReporter === 'asc' ? cmp : -cmp;
+                }
+
+                if (currentView === 'approved-claims' && sortClaimant !== 'none') {
+                    const cmp = (a.claimantUsername || '').localeCompare(b.claimantUsername || '');
+                    if (cmp !== 0) return sortClaimant === 'asc' ? cmp : -cmp;
+                }
 
                 return 0;
             });
@@ -129,7 +183,7 @@ export default function UserHome() {
         const pData = baseData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
         return { paginatedData: pData, totalPages: tPages };
-    }, [currentView, yourItems, approvedItems, resolvedItems, yourClaims, approvedClaims, searchQuery, searchField, sortBy, currentPage]);
+    }, [currentView, yourItems, approvedItems, resolvedItems, yourClaims, approvedClaims, searchQuery, searchField, filterType, statusFilter, sortItemName, sortUsername, sortReporter, sortClaimant, currentPage]);
 
     return (
         <div className="dashboard-layout">
@@ -213,36 +267,176 @@ export default function UserHome() {
                                     <option value="username">Username Only</option>
                                 </select>
                             </div>
-                            <div className="sort-group">
-                                <span className="sort-label">Sort By:</span>
-                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="toolbar-select">
-                                    <option value="none">Default</option>
-                                    <option value="item-asc">Item Name (A-Z)</option>
-                                    <option value="item-desc">Item Name (Z-A)</option>
+                            
+                            <div className="toolbar-actions">
+                                <div className="toolbar-group relative-container" ref={filterMenuRef}>
+                                    <button 
+                                        className="custom-dropdown-btn" 
+                                        onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+                                    >
+                                        <FiFilter className="toolbar-icon" size={18} />
+                                        <span>Filters {(filterType !== 'all' || statusFilter !== 'all') && "•"}</span>
+                                        <FiChevronDown size={14} />
+                                    </button>
 
-                                    {!currentView.includes('claims') && (
-                                        <>
-                                            <option value="user-asc">Username (A-Z)</option>
-                                            <option value="user-desc">Username (Z-A)</option>
-                                        </>
-                                    )}
+                                    {isFilterMenuOpen && (
+                                        <div className="custom-dropdown-menu">
+                                            <div className="filter-section">
+                                                <h4 className="filter-heading">Type</h4>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="type" value="all" checked={filterType === 'all'} onChange={(e) => setFilterType(e.target.value)} />
+                                                    All Types
+                                                </label>
+                                                {!currentView.includes('claims') ? (
+                                                    <>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="type" value="LOST" checked={filterType === 'LOST'} onChange={(e) => setFilterType(e.target.value)} />
+                                                            Lost
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="type" value="FOUND" checked={filterType === 'FOUND'} onChange={(e) => setFilterType(e.target.value)} />
+                                                            Found
+                                                        </label>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="type" value="CLAIMING_FOUND_ITEM" checked={filterType === 'CLAIMING_FOUND_ITEM'} onChange={(e) => setFilterType(e.target.value)} />
+                                                            Claiming Found
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="type" value="RETURNING_LOST_ITEM" checked={filterType === 'RETURNING_LOST_ITEM'} onChange={(e) => setFilterType(e.target.value)} />
+                                                            Returning Lost
+                                                        </label>
+                                                    </>
+                                                )}
+                                            </div>
 
-                                    {currentView === 'approved-claims' && (
-                                        <>
-                                            <option value="claimant-asc">Claimant Username (A-Z)</option>
-                                            <option value="claimant-desc">Claimant Username (Z-A)</option>
-                                            <option value="reporter-asc">Reported By Username (A-Z)</option>
-                                            <option value="reporter-desc">Reported By Username (Z-A)</option>
-                                        </>
-                                    )}
+                                            <hr className="filter-divider" />
 
-                                    {currentView === 'your-claims' && (
-                                        <>
-                                            <option value="reporter-asc">Reported By Username (A-Z)</option>
-                                            <option value="reporter-desc">Reported By Username (Z-A)</option>
-                                        </>
+                                            <div className="filter-section">
+                                                <h4 className="filter-heading">Status</h4>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="status" value="all" checked={statusFilter === 'all'} onChange={(e) => setStatusFilter(e.target.value)} />
+                                                    All Statuses
+                                                </label>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="status" value="PENDING" checked={statusFilter === 'PENDING'} onChange={(e) => setStatusFilter(e.target.value)} />
+                                                    Pending
+                                                </label>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="status" value="APPROVED" checked={statusFilter === 'APPROVED'} onChange={(e) => setStatusFilter(e.target.value)} />
+                                                    Approved
+                                                </label>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="status" value="REJECTED" checked={statusFilter === 'REJECTED'} onChange={(e) => setStatusFilter(e.target.value)} />
+                                                    Rejected
+                                                </label>
+                                                {!currentView.includes('claims') && (
+                                                    <label className="radio-label">
+                                                        <input type="radio" name="status" value="RESOLVED" checked={statusFilter === 'RESOLVED'} onChange={(e) => setStatusFilter(e.target.value)} />
+                                                        Resolved
+                                                    </label>
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
-                                </select>
+                                </div>
+
+                                <div className="toolbar-group relative-container" ref={sortMenuRef}>
+                                    <button 
+                                        className="custom-dropdown-btn" 
+                                        onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
+                                    >
+                                        <FiList className="toolbar-icon" size={18} />
+                                        <span>Sort {isSortingActive && "•"}</span>
+                                        <FiChevronDown size={14} />
+                                    </button>
+
+                                    {isSortMenuOpen && (
+                                        <div className="custom-dropdown-menu">
+                                            
+                                            <div className="filter-section">
+                                                <h4 className="filter-heading">Item Name</h4>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="sort-item" value="none" checked={sortItemName === 'none'} onChange={(e) => setSortItemName(e.target.value as any)} />
+                                                    Default
+                                                </label>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="sort-item" value="asc" checked={sortItemName === 'asc'} onChange={(e) => setSortItemName(e.target.value as any)} />
+                                                    Ascending (A-Z)
+                                                </label>
+                                                <label className="radio-label">
+                                                    <input type="radio" name="sort-item" value="desc" checked={sortItemName === 'desc'} onChange={(e) => setSortItemName(e.target.value as any)} />
+                                                    Descending (Z-A)
+                                                </label>
+                                            </div>
+
+                                            {!currentView.includes('claims') && (
+                                                <>
+                                                    <hr className="filter-divider" />
+                                                    <div className="filter-section">
+                                                        <h4 className="filter-heading">Username</h4>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-user" value="none" checked={sortUsername === 'none'} onChange={(e) => setSortUsername(e.target.value as any)} />
+                                                            Default
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-user" value="asc" checked={sortUsername === 'asc'} onChange={(e) => setSortUsername(e.target.value as any)} />
+                                                            Ascending (A-Z)
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-user" value="desc" checked={sortUsername === 'desc'} onChange={(e) => setSortUsername(e.target.value as any)} />
+                                                            Descending (Z-A)
+                                                        </label>
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {currentView.includes('claims') && (
+                                                <>
+                                                    <hr className="filter-divider" />
+                                                    <div className="filter-section">
+                                                        <h4 className="filter-heading">Reported By Username</h4>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-reporter" value="none" checked={sortReporter === 'none'} onChange={(e) => setSortReporter(e.target.value as any)} />
+                                                            Default
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-reporter" value="asc" checked={sortReporter === 'asc'} onChange={(e) => setSortReporter(e.target.value as any)} />
+                                                            Ascending (A-Z)
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-reporter" value="desc" checked={sortReporter === 'desc'} onChange={(e) => setSortReporter(e.target.value as any)} />
+                                                            Descending (Z-A)
+                                                        </label>
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {currentView === 'approved-claims' && (
+                                                <>
+                                                    <hr className="filter-divider" />
+                                                    <div className="filter-section">
+                                                        <h4 className="filter-heading">Claimant Username</h4>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-claimant" value="none" checked={sortClaimant === 'none'} onChange={(e) => setSortClaimant(e.target.value as any)} />
+                                                            Default
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-claimant" value="asc" checked={sortClaimant === 'asc'} onChange={(e) => setSortClaimant(e.target.value as any)} />
+                                                            Ascending (A-Z)
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input type="radio" name="sort-claimant" value="desc" checked={sortClaimant === 'desc'} onChange={(e) => setSortClaimant(e.target.value as any)} />
+                                                            Descending (Z-A)
+                                                        </label>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
