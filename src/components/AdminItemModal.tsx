@@ -29,6 +29,34 @@ export default function AdminItemModal({ isOpen, activeItem, onClose, onSubmit, 
         }
     }, [isOpen, activeItem]);
 
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                const activeEl = document.activeElement;
+
+                const isInputFocused = activeEl && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName);
+
+                if (isInputFocused) {
+                    (activeEl as HTMLElement).blur();
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                } else {
+                    onClose();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown, { capture: true });
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown, { capture: true });
+        };
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     const isResolved = activeItem?.status === 'RESOLVED';

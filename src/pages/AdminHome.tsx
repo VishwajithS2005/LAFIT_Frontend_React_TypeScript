@@ -87,7 +87,6 @@ export default function AdminHome() {
         if (currentView === 'regular-users') {
             baseData = users.filter(u => u.role === 'USER');
         } else if (currentView === 'admin-users') {
-            // SAFETY FIX: Filter out the currently logged-in user so they can't demote themselves
             baseData = users.filter(u => u.role === 'ADMIN' && u.id !== user?.id);
         } else if (currentView === 'all-items') {
             baseData = [...allItems];
@@ -257,13 +256,16 @@ export default function AdminHome() {
                                                     </div>
                                                 </div>
 
-                                                {/* Updated Button Group inside User Card */}
                                                 <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', width: '100%' }}>
                                                     <button
                                                         style={{ flex: 1, background: 'var(--bg-input)', border: '1px solid var(--border-color)', color: 'var(--text-main)', padding: '8px', borderRadius: '6px', cursor: 'pointer', transition: 'background 0.2s', fontSize: '13px' }}
                                                         onMouseOver={(e) => e.currentTarget.style.background = 'var(--primary-blue)'}
                                                         onMouseOut={(e) => e.currentTarget.style.background = 'var(--bg-input)'}
-                                                        onClick={() => changeRole(entry.id, entry.role === 'ADMIN' ? 'USER' : 'ADMIN')}
+                                                        onClick={() => {
+                                                            if (window.confirm(`Are you sure you want to change user ${entry.username}'s permission level?`)) {
+                                                                changeRole(entry.id, entry.role === 'ADMIN' ? 'USER' : 'ADMIN')
+                                                            }
+                                                        }}
                                                     >
                                                         {entry.role === 'ADMIN' ? 'Demote' : 'Promote'}
                                                     </button>

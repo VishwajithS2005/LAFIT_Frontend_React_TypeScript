@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { ResolutionClaim } from '../types/Claims';
 import './Modals.css';
 
@@ -10,6 +11,35 @@ interface ClaimModalProps {
 }
 
 export default function ClaimModal({ isOpen, claim, canDelete, onClose, onDelete }: ClaimModalProps) {
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                const activeEl = document.activeElement;
+
+                const isInputFocused = activeEl && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName);
+
+                if (isInputFocused) {
+                    (activeEl as HTMLElement).blur();
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                } else {
+                    onClose();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown, { capture: true });
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown, { capture: true });
+        };
+    }, [isOpen, onClose]);
+
     if (!isOpen || !claim) return null;
 
     const isDeletable = canDelete && (claim.status === 'PENDING' || claim.status === 'REJECTED');

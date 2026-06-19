@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { type UserLoginRequest } from "../types/Users"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -42,9 +42,24 @@ export default function Login() {
 
         if (authState.error) {
             useToastStore.getState().addToast(`Error: ${authState.error}.`, "error");
-            // alert(`Error: ${authState.error}.`);
         }
     };
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     return (
         <div style={{ textAlign: "center", padding: "50px", maxWidth: "400px", margin: "0 auto" }}>
